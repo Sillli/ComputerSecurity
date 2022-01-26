@@ -70,10 +70,10 @@ int main(int argc, char *argv[]) {
 
 		
 		user_pass = getpass(prompt);
-		passwddata = getpwnam(user);
+		passwddata = mygetpwnam(user);
+
 
 		if (passwddata != NULL) {
-			printf("yello");
 			/* You have to encrypt user_pass for this to work */
 			/* Don't forget to include the salt */
 			char *encryption = crypt(user_pass,passwddata->passwd_salt);
