@@ -81,7 +81,8 @@ int main(int argc, char *argv[]) {
 			char *encryption = crypt(user_pass,passwddata->passwd_salt);
 
 
-			if (!strcmp(encryption, passwddata->passwd)) {
+			
+			if(!strcmp(encryption, passwddata->passwd) && passwddata->pwfailed <= 3){  
 
 				printf(" You're in !\n"); /* Successful login */
 
@@ -91,16 +92,40 @@ int main(int argc, char *argv[]) {
 				printf("Number of failed attempts: %d\n", passwddata->pwfailed);   /*Print the number of failed attempts*/
 				passwddata->pwfailed = 0;                     /*Reset the counter */
 
-				if(passwddata->pwage > 5)                  /*If the age of the password is older than 5*/
-					printf("Time to change the password, you have passed 5 logins\n");       /*print a reminder*/
+				if(passwddata->pwage > 5){                  /*If the age of the password is older than 5*/
 
-				if(mysetpwent(user,passwddata)==-1)          /*Try to save changes to database*/
+					printf("You have passed 5 logins, do you want to change password?(y) \n");       /*print a reminder*/
+					char answer[2];
+					if(fgets(answer,2 , stdin)==NULL)     /*Get answer and make sure it is not NULL*/
+						exit(255);
+
+					if(answer[0] == 'y'){               /*If yes, enter new password*/
+						char *password;
+						password = getpass("Enter new password:");
+					
+						if(password == NULL){                      /*Make sure new password is not NULL*/
+							bzero(password,8);
+							printf("Invalid password");
+						}
+						passwddata->passwd = crypt(password, passwddata->passwd_salt);      /*Crypt new password*/						
+						passwddata->pwage = 0;
+						
+					}
+
+				}
+
+
+				if(mysetpwent(user,passwddata)==-1) {         /*Try to save changes to database*/
 					printf("No access to database");
+					exit(0);
+					}
 
 				/*  check UID, see setuid(2) */
 				
-				if(setuid(passwddata->uid)==-1)
+				if(setuid(passwddata->uid)==-1){
 					printf("Error, can not check ID");
+					exit(0);
+				}
 
 			
 				/*  start a shell, use execve(2) */
@@ -120,11 +145,7 @@ int main(int argc, char *argv[]) {
 				if(mysetpwent(user,passwddata)==-1)    /*Try to update database*/
 					printf("No access to database");
 
-				if(passwddata->pwfailed > 3){            /*Quit program if too many tries*/
-					printf("To many failed attempts");
-					passwddata->pwfailed = 0;
-					exit(0);
-				}
+			
 			}
 		}
 		printf("Login Incorrect \n");
