@@ -1,6 +1,9 @@
 /* $Header: https://svn.ita.chalmers.se/repos/security/edu/course/computer_security/trunk/lab/login_linux/login_linux.c 585 2013-01-19 10:31:04Z pk@CHALMERS.SE $ */
 
 /* gcc -std=gnu99 -Wall -g -o mylogin login_linux.c -lcrypt */
+/* Group 20*/
+/*Miranda Jernberg*/
+/*Malin Dahlén*/
 
 #include <stdlib.h>
 #include <unistd.h>
